@@ -24,8 +24,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Chronometer;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.twilio.voice.Call;
@@ -34,7 +32,6 @@ import com.twilio.voice.CallInvite;
 import com.twilio.voice.RegistrationException;
 import com.twilio.voice.RegistrationListener;
 import com.twilio.voice.VoiceClient;
-import com.twilio.voice.quickstart.gcm.GCMRegistrationService;
 
 import java.util.HashMap;
 
@@ -123,8 +120,6 @@ public class VoiceActivity extends AppCompatActivity {
          */
         if (!checkPermissionForMicrophone()) {
             requestPermissionForMicrophone();
-        } else {
-            startGCMRegistration();
         }
     }
 
@@ -132,13 +127,6 @@ public class VoiceActivity extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         handleIncomingCallIntent(intent);
-    }
-
-    private void startGCMRegistration() {
-        if (checkPlayServices()) {
-            Intent intent = new Intent(this, GCMRegistrationService.class);
-            startService(intent);
-        }
     }
 
     private RegistrationListener registrationListener() {
@@ -453,33 +441,12 @@ public class VoiceActivity extends AppCompatActivity {
         if (requestCode == MIC_PERMISSION_REQUEST_CODE && permissions.length > 0) {
             boolean granted = true;
             if (granted) {
-                startGCMRegistration();
+
             } else {
                 Snackbar.make(coordinatorLayout,
                         "Microphone permissions needed. Please allow in your application settings.",
                         Snackbar.LENGTH_LONG).show();
             }
         }
-    }
-
-    /**
-     * Check the device to make sure it has the Google Play Services APK. If
-     * it doesn't, display a dialog that allows users to download the APK from
-     * the Google Play Store or enable it in the device's system settings.
-     */
-    private boolean checkPlayServices() {
-        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (apiAvailability.isUserResolvableError(resultCode)) {
-                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
-                        .show();
-            } else {
-                Log.e(TAG, "This device is not supported.");
-                finish();
-            }
-            return false;
-        }
-        return true;
     }
 }

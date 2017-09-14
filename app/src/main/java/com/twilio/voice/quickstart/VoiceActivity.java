@@ -406,6 +406,10 @@ public class VoiceActivity extends AppCompatActivity {
                     AudioFocusRequest focusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
                             .setAudioAttributes(playbackAttributes)
                             .setAcceptsDelayedFocusGain(true)
+                            .setOnAudioFocusChangeListener(new AudioManager.OnAudioFocusChangeListener() {
+                                 @Override
+                                public void onAudioFocusChange(int i) { }
+                             })
                             .build();
                     audioManager.requestAudioFocus(focusRequest);
                 } else {
